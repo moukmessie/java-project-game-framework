@@ -1,9 +1,8 @@
 package ulco.cardGame.common.interfaces;
 
-import java.io.Serializable;
 import java.util.List;
 
-public interface Game extends Serializable {
+public interface Game {
 
     /**
      * Initialize the whole game using a parameter file
