@@ -2,7 +2,7 @@ package ulco.cardGame.common.games.components;
 
 import ulco.cardGame.common.interfaces.Player;
 
-public class Component {
+public abstract class Component {
 
     // variable which enables to count number of elements
     private static Integer nComponents = 0;
