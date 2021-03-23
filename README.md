@@ -1,5 +1,8 @@
 # L2 - Java Project
 
+## Author
+MOUKIMOU M'PIKA Messie G
+
 ## Description 
 
 Création d'un framework de jeu de cartes en réseau.
