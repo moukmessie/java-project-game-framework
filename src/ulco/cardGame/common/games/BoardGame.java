@@ -18,7 +18,11 @@ public abstract class BoardGame implements Game {
     public BoardGame(String name, Integer maxPlayer, String filename) {
         this.name = name;
         this.maxPlayer = maxPlayer;
+        this.started=false;
+        this.endGame=false;
+        this.players = new ArrayList<>();
         initialize(filename);
+
     }
 
     /**
@@ -73,14 +77,14 @@ public abstract class BoardGame implements Game {
      * @return
      */
     public boolean isStarted(){
-
+    started=true;
             if(maxNumberOfPlayers().equals(maxPlayer) && run().isPlaying()){
                 started=false;
                 return started;
             }else {
-                started=true;
                 return started;
             }
+
     }
 
     /**

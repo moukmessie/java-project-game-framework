@@ -1,6 +1,6 @@
 package ulco.cardGame.common.interfaces;
 
-import ulco.cardGame.common.games.components.Component;
+import ulco.cardGame.common.games.components.components.Component;
 
 import java.util.List;
 
