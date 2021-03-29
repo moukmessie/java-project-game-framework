@@ -5,9 +5,7 @@ import ulco.cardGame.common.interfaces.Player;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class CardGame extends BoardGame {
 
@@ -60,7 +58,29 @@ public class CardGame extends BoardGame {
      */
     @Override
     public Player run() {
-        return null;
+       //Store player and associate his played card
+         Map <Player , Card>playerCard = new HashMap<>();
+         Player winner = null;
+
+
+
+         //Card distribution by player
+        for (Card card : cards){
+            players.get(players.size()).addComponent(card);
+        }
+
+        //starting game players
+        for (Player player : players){
+            if(player.getScore()>0 && player.getScore()<cards.size()){
+                player.canPlay(true);
+            }
+        }
+
+
+
+
+
+        return winner;
     }
 
     /**
@@ -71,6 +91,11 @@ public class CardGame extends BoardGame {
      */
     @Override
     public boolean end() {
+        for(Player player : players){
+            if(player.getScore() == cards.size()){
+                return true;
+            }
+        }
         return false;
     }
 
