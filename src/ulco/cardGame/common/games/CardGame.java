@@ -1,6 +1,6 @@
 package ulco.cardGame.common.games;
 
-import ulco.cardGame.common.games.components.components.Card;
+import ulco.cardGame.common.games.components.Card;
 import ulco.cardGame.common.interfaces.Player;
 
 import java.io.File;
@@ -58,15 +58,18 @@ public class CardGame extends BoardGame {
      */
     @Override
     public Player run() {
+        this.started=true;
        //Store player and associate his played card
          Map <Player , Card>playerCard = new HashMap<>();
          Player winner = null;
-
-
+           int cmpt = 0;
+        //rand cards
+        Collections.shuffle(cards);
 
          //Card distribution by player
         for (Card card : cards){
-            players.get(players.size()).addComponent(card);
+            players.get(cmpt).addComponent(card);
+            cmpt++;
         }
 
         //starting game players

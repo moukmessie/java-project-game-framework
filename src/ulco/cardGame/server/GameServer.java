@@ -1,7 +1,7 @@
 package ulco.cardGame.server;
 
 import ulco.cardGame.common.games.CardGame;
-import ulco.cardGame.common.games.components.components.CardPlayer;
+import ulco.cardGame.common.games.components.CardPlayer;
 import ulco.cardGame.common.interfaces.Game;
 import ulco.cardGame.common.interfaces.Player;
 

@@ -1,10 +1,8 @@
-package ulco.cardGame.common.games.components.components;
+package ulco.cardGame.common.games.components;
 
 import ulco.cardGame.common.games.BoardPlayer;
-import ulco.cardGame.common.interfaces.Player;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 

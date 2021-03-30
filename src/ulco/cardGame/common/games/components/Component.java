@@ -1,4 +1,4 @@
-package ulco.cardGame.common.games.components.components;
+package ulco.cardGame.common.games.components;
 
 import ulco.cardGame.common.interfaces.Player;
 
