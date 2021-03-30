@@ -71,17 +71,76 @@ public class CardGame extends BoardGame {
             players.get(cmpt).addComponent(card);
             cmpt++;
         }
+        numberOfRounds=0;
+        while (!end()) {
+            int hightValue = 0;
+            //starting game players
+            for (Player player : players) {
+                // Get played card by current player
+                Card card = (Card) player.play();
 
-        //starting game players
-        for (Player player : players){
-            if(player.getScore()>0 && player.getScore()<cards.size()){
-                player.canPlay(true);
+
+                // Keep knowledge of card played
+                playerCard.put(player, card);
+                System.out.println(player.getName() + " has played " + card.getName());
+                // if(player.getScore()>0 && player.getScore()<cards.size()){
+                //player.canPlay(true);
+                // }
             }
+
+            for (Map.Entry<Player, Card> entry : playerCard.entrySet()) {
+                //get player (key or entry map
+                Player player = entry.getKey();
+
+                //get played card of player
+                //same as : Card card = playedCard.get(player)
+                Card card = entry.getValue();
+
+                if (card.getValue() > hightValue || hightValue == 0) {
+                    winner = player;
+                    hightValue = card.getValue();
+                } else if (card.getValue().equals(hightValue)) {
+                    Player[] equal = {player};
+                    hightValue = card.getValue();
+                    winner = equal[new Random().nextInt(equal.length)];
+
+                    /*Random random =new Random();int Win =random.nextInt(2);
+                    if (Win==1){
+                        winner=player;
+                        hightValue=card.getValue();
+                    }*/
+
+                }
+                System.out.println(winner.getName() + "win ROUND "+ numberOfRounds);
+            }
+
+            //gain de card
+            for (Player player : players) {
+                if (player == winner) {
+                    for (Map.Entry<Player, Card> entry : playerCard.entrySet()) {
+                        player.addComponent(entry.getValue());
+                    }
+                }
+
+            }
+            //delete players cannot playing
+            for (Player player : players) {
+                if (player.getScore() == 0) {
+                    removePlayer(player);
+                }
+            }
+            //shuffleHand
+            if (numberOfRounds % 10 == 0) {
+                System.out.println("Card shuffle....");
+                for (Player player : players) {
+                    player.shuffleHand();
+                }
+
+            }
+            numberOfRounds++;
+
+
         }
-
-
-
-
 
         return winner;
     }
