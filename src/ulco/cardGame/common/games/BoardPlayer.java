@@ -8,6 +8,7 @@ public abstract class BoardPlayer implements Player {
 
     public Integer score; // score associé au joueur
 
+
     /**
      * constructor
      * @param name
@@ -23,12 +24,7 @@ public abstract class BoardPlayer implements Player {
      * @param playing
      */
     public void canPlay(boolean playing){
-        if(playing){
-            this.playing=false;
-        }else {
-            this.playing=true;
-        }
-
+        this.playing = playing;
     }
 
     @Override

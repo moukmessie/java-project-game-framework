@@ -1,7 +1,7 @@
 package ulco.cardGame.common.games.components;
 
 public class Card extends Component {
-    protected boolean hidden;//
+    protected boolean hidden;//permet de dire si la carte est retournée ou non
 
     /**
      *

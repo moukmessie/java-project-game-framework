@@ -26,7 +26,8 @@ public abstract class BoardGame implements Game {
     }
 
     /**
-     *méthode qui permet d’ajouter un joueur à la liste
+     *add player to ArrayList players
+     * méthode qui permet d’ajouter un joueur à la liste
      * des joueurs
      * @param player
      * @return
@@ -37,12 +38,12 @@ public abstract class BoardGame implements Game {
             players.add(player);
             return true;
         }
-
         return false;
 
     }
 
     /**
+     * remove player to Arralist players
      *méthode qui va supprimer un joueur de la liste
      * des joueurs
      * @param player
@@ -53,7 +54,8 @@ public abstract class BoardGame implements Game {
     }
 
     /**
-     *: méthode qui va supprimer l’ensemble des joueurs présents dans
+     * remove all players in the game
+     * méthode qui va supprimer l’ensemble des joueurs présents dans
      * le jeu
      */
     public void removePlayers(){
@@ -61,33 +63,28 @@ public abstract class BoardGame implements Game {
     }
 
     /**
-     *: méthode permettant d’afficher l’état d’un jeu. Ici, nous afficherons
+     * view the status game/ view the game players
+     * méthode permettant d’afficher l’état d’un jeu. Ici, nous afficherons
      * l’ensemble des joueurs présents
      */
     public void displayState(){
+        System.out.println("*********** Display State ***********");
         for(Player player : players){
             System.out.println(player);
-
         }
-
     }
 
     /***
+     * view the status game if is started or no
      *méthode qui va spécifier si le jeu est commencé ou non
      * @return
      */
     public boolean isStarted(){
-    started=true;
-            if(maxNumberOfPlayers().equals(maxPlayer) && run().isPlaying()){
-                started=false;
-                return started;
-            }else {
-                return started;
-            }
-
+    return this.started;
     }
 
     /**
+     * return the max number of players
      * @returne le nombre maximum de joueurs attendu
      */
     public Integer maxNumberOfPlayers(){
@@ -95,18 +92,12 @@ public abstract class BoardGame implements Game {
     }
 
     /**
+     * get the players Link game
      *permet de récupérer la liste des joueurs du jeu en cours
      * @return liste des joueur
      */
 
     public List<Player> getPlayers(){
-        List<Player>liste = new ArrayList<>();
-
-        if(isStarted()){
-           for (int i=0; i<players.size();i++){
-               liste=players;
-           }
-        }
-        return liste;
+      return this.players;
     }
 }

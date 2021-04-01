@@ -12,57 +12,44 @@ public List<Card> cards;
 
     public CardPlayer(String name) {
         super(name);
+        cards = new ArrayList<>();
     }
-
-
 
     @Override
     public Integer getScore() {
         return this.score;
-
     }
 
     @Override
     public Card play() {
+        //return this.cards.remove(0) ;
         Card cardRemove = null;
         if(cards.size()>0){
-         cardRemove = cards.get(0);
-         cards.remove(cardRemove);
+            cardRemove = cards.get(0);
+            cards.remove(cardRemove);
         }
         return cardRemove ;
+
     }
-
-
-
 
     @Override
     public void addComponent(Component component) {
-        //this.cards= new ArrayList<>();
-       //this.cards.add(component.getId(),component.getValue());
+
         this.cards.add((Card) component);
-        this.score+=component.getValue();
+        this.score++;
     }
 
     @Override
     public void removeComponent(Component component) {
 
-        //this.cards= new ArrayList<>();
-      // this.cards.remove(component.getId(),component.getValue());
         this.cards.remove(component);
-        this.score-=component.getValue();
+       this.score--;
     }
 
     @Override
     public List<Component> getComponents() {
 
-       List<Component> TotalCards = new ArrayList<>();
-
-            for (Card c : cards){
-                TotalCards= (List<Component>) c;
-            }
-        return TotalCards;
-       // return null;
-
+     return new ArrayList<>(this.cards);
     }
 
     @Override
@@ -73,24 +60,16 @@ public List<Card> cards;
 
     @Override
     public void clearHand() {
-        for(Card card : cards){
-            cards.remove(card);
-        }
+      cards.clear();
     }
 
     @Override
     public String toString() {
         return "CardPlayer{" +
-                "name='" + name + '\'' +
-                ", score=" + score +
+                "name='" + getName() + '\'' +
+                ", score=" + getScore() +
                 '}';
     }
 
 
-    /*@Override
-    public String toString() {
-        return "CardPlayer{" +
-                "cards=" + cards +
-                '}';
-    }*/
 }

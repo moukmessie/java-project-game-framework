@@ -20,14 +20,16 @@ public class GameServer {
         // - Add players to game
         Player player1 = new CardPlayer("user1");
         Player player2 = new CardPlayer("user2");
-
-        // - Run the Game loop
         game.addPlayer(player1);
         game.addPlayer(player2);
 
-        // - Display the winner player
 
-        game.displayState();
+
+        // - Run the Game loop
+        game.run();
+
+        // - Display the winner player
+       game.displayState();
     }
 }
 

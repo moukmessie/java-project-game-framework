@@ -42,7 +42,6 @@ public class CardGame extends BoardGame {
                this.cards.add(new Card(data[0],Integer.parseInt(data[1])));
                //Card card = new Card(CardV[0],Integer.parseInt(CardV[1]));
                 //this.cards.add(card);
-
             }
             myReader.close();
         } catch (FileNotFoundException e) {
@@ -58,91 +57,91 @@ public class CardGame extends BoardGame {
      */
     @Override
     public Player run() {
-        this.started=true;
-       //Store player and associate his played card
-         Map <Player , Card>playerCard = new HashMap<>();
-         Player winner = null;
-           int cmpt = 0;
-        //rand cards
+
+
+        //Store player and associate his played card
+        Map <Player , Card>playerCard = new HashMap<>();
+        Player winner = null;//winner attribute
+        int count = 0;//count attribute
+        int hightValue = 0;//valeur de carte la plus elevé
+        numberOfRounds=0;
+        //Shuffler cards
         Collections.shuffle(cards);
 
-         //Card distribution by player
+        //Cards distrbution
         for (Card card : cards){
-            players.get(cmpt).addComponent(card);
-            cmpt++;
+            getPlayers().get(count%getPlayers().size()).addComponent(card);
+            count++;
         }
-        numberOfRounds=0;
-        while (!end()) {
-            int hightValue = 0;
+        //players can play
+        for (Player player : players) {
+            player.canPlay(true);
+        }
+
+
+        while (!this.end()) {
             //starting game players
-            for (Player player : players) {
-                // Get played card by current player
-                Card card = (Card) player.play();
-
-
-                // Keep knowledge of card played
-                playerCard.put(player, card);
-                System.out.println(player.getName() + " has played " + card.getName());
-                // if(player.getScore()>0 && player.getScore()<cards.size()){
-                //player.canPlay(true);
-                // }
-            }
-
-            for (Map.Entry<Player, Card> entry : playerCard.entrySet()) {
-                //get player (key or entry map
-                Player player = entry.getKey();
-
-                //get played card of player
-                //same as : Card card = playedCard.get(player)
-                Card card = entry.getValue();
-
-                if (card.getValue() > hightValue || hightValue == 0) {
-                    winner = player;
-                    hightValue = card.getValue();
-                } else if (card.getValue().equals(hightValue)) {
-                    Player[] equal = {player};
-                    hightValue = card.getValue();
-                    winner = equal[new Random().nextInt(equal.length)];
-
-                    /*Random random =new Random();int Win =random.nextInt(2);
-                    if (Win==1){
-                        winner=player;
-                        hightValue=card.getValue();
-                    }*/
-
-                }
-                System.out.println(winner.getName() + "win ROUND "+ numberOfRounds);
-            }
-
-            //gain de card
-            for (Player player : players) {
-                if (player == winner) {
-                    for (Map.Entry<Player, Card> entry : playerCard.entrySet()) {
-                        player.addComponent(entry.getValue());
-                    }
-                }
-
-            }
-            //delete players cannot playing
-            for (Player player : players) {
-                if (player.getScore() == 0) {
-                    removePlayer(player);
-                }
-            }
+            numberOfRounds += 1;
+            System.out.println("***** ROUND " + numberOfRounds + " *****");
+            displayState();//view state of players
             //shuffleHand
             if (numberOfRounds % 10 == 0) {
                 System.out.println("Card shuffle....");
                 for (Player player : players) {
-                    player.shuffleHand();
+
+                        player.shuffleHand();//si le joueur possède encore des cartes mélanger
                 }
 
             }
-            numberOfRounds++;
+
+            for (Player player : this.getPlayers()) {
+                // Get played card by current player
+                 if (player.isPlaying()){
+                    Card card = (Card) player.play();
+
+                // Keep knowledge of card played
+                playerCard.put(player, card);
+                System.out.println(player.getName() + " has played " + card.getName());
+               }
+              else {
+                     removePlayer(player);
+
+              }
+
+            }
+
+            List<Player>equal = new ArrayList<>();
+            for (Map.Entry<Player, Card> entry : playerCard.entrySet()) {
+                // get player (key of entry map )
+                Player player = entry.getKey();
+                // get played card of player
+                // Same as: Card card = playedCard .get ( player );
+                Card card =entry.getValue();
+
+                if (card.getValue() > hightValue ) {
+                    hightValue = card.getValue();//stockage de la plus grande valeur dans l'attribut hightValue
+                    winner = player;
+                }else if (card.getValue().equals(hightValue) ) {
+                    equal.add(player);
+                    if (equal.size() !=0){
+                        int alea= new Random().nextInt(equal.size());
+
+                        winner=equal.get(alea);
+                    }
+                }
+                winner.addComponent(entry.getValue());
+
+
+            }System.out.println(winner.getName() + " win ROUND "+ numberOfRounds +" score: "+winner.getScore());
+            playerCard.clear();
 
 
         }
-
+        winner.clearHand();
+        // playerCard.clear();
+        endGame=true;
         return winner;
+
     }
 
     /**
@@ -153,7 +152,7 @@ public class CardGame extends BoardGame {
      */
     @Override
     public boolean end() {
-        for(Player player : players){
+        for(Player player : getPlayers()){
             if(player.getScore() == cards.size()){
                 return true;
             }
