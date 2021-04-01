@@ -9,11 +9,12 @@ import java.util.*;
 
 public class CardGame extends BoardGame {
 
-    private List <Card> cards; // une liste de cartes, de type Card
-    private Integer numberOfRounds ; //un compteur permettant de savoir le nombre de rounds réalisés
+    private List <Card> cards; // a list of cards, of type Card
+    private Integer numberOfRounds ; //a counter allowing to know the number of completed rounds
 
 
     /**
+     * constructor calling the parent constructor of BoardGame class
      *  Constructeur de
      * la classe faisant appel au constructeur de la classe mère BoardGame
      * @param name
@@ -25,6 +26,9 @@ public class CardGame extends BoardGame {
     }
 
     /**
+     * method that loads the contents of the game file and
+     *  initializes the card game accordingly (the card list)
+     *
      *  méthode qui charge le contenu du fichier de jeu et
      * initialise le jeu de cartes en conséquence (la liste des cartes)
      * @param filename
@@ -52,6 +56,7 @@ public class CardGame extends BoardGame {
     }
 
     /**
+     * method associated with the game loop
      * méthode associée à la boucle de jeu
      * @return
      */
@@ -59,16 +64,16 @@ public class CardGame extends BoardGame {
     public Player run() {
 
 
-        //Store player and associate his played card
-        Map <Player , Card>playerCard = new HashMap<>();
+
         Player winner = null;//winner attribute
         int count = 0;//count attribute
-        int hightValue = 0;//valeur de carte la plus elevé
+        int hightValue = 0;//highest card value
         numberOfRounds=0;
-        //Shuffler cards
+        List<Player>equal = new ArrayList<>();//table of equal players
+        //Shuffled cards
         Collections.shuffle(cards);
 
-        //Cards distrbution
+        //Cards distribution
         for (Card card : cards){
             getPlayers().get(count%getPlayers().size()).addComponent(card);
             count++;
@@ -80,66 +85,70 @@ public class CardGame extends BoardGame {
 
 
         while (!this.end()) {
-            //starting game players
+            //starting game play
             numberOfRounds += 1;
+            equal.clear();
             System.out.println("***** ROUND " + numberOfRounds + " *****");
             displayState();//view state of players
+
             //shuffleHand
             if (numberOfRounds % 10 == 0) {
                 System.out.println("Card shuffle....");
                 for (Player player : players) {
-
-                        player.shuffleHand();//si le joueur possède encore des cartes mélanger
+                        player.shuffleHand();//players shuffle hand
                 }
 
             }
-
+            //Store player and associate his played card
+            Map <Player , Card>playerCard = new HashMap<>();
             for (Player player : this.getPlayers()) {
                 // Get played card by current player
+                //if can playing
                  if (player.isPlaying()){
                     Card card = (Card) player.play();
-
+                    if (card.getValue()> hightValue){
+                        hightValue = card.getValue();//storing the largest value in the hightValue attribute
+                        winner = player;
+                    }
                 // Keep knowledge of card played
                 playerCard.put(player, card);
                 System.out.println(player.getName() + " has played " + card.getName());
                }
               else {
-                     removePlayer(player);
-
+                     removePlayer(player);//remove player if he don't have cards
               }
 
             }
 
-            List<Player>equal = new ArrayList<>();
             for (Map.Entry<Player, Card> entry : playerCard.entrySet()) {
                 // get player (key of entry map )
                 Player player = entry.getKey();
                 // get played card of player
-                // Same as: Card card = playedCard .get ( player );
-                Card card =entry.getValue();
-
-                if (card.getValue() > hightValue ) {
-                    hightValue = card.getValue();//stockage de la plus grande valeur dans l'attribut hightValue
-                    winner = player;
-                }else if (card.getValue().equals(hightValue) ) {
+                Card card = entry.getValue();
+                //if equal add to table equal
+                if (card.getValue().equals(hightValue)) {
                     equal.add(player);
-                    if (equal.size() !=0){
-                        int alea= new Random().nextInt(equal.size());
-
-                        winner=equal.get(alea);
-                    }
                 }
-                winner.addComponent(entry.getValue());
+            }
 
+            if (equal.size()!=0){
+                Random win =new Random();
+                winner=equal.get(win.nextInt(equal.size()));//winner random
+            }
 
-            }System.out.println(winner.getName() + " win ROUND "+ numberOfRounds +" score: "+winner.getScore());
-            playerCard.clear();
-
+            for (Map.Entry<Player, Card> entry : playerCard.entrySet()){
+                //attribute cards of other player to the winner
+                winner.addComponent((entry.getValue()));
+                if (entry.getKey().getComponents().size()==0){
+                    entry.getKey().canPlay(false);//when the player has no more cards he is excluded from game
+                }
+            }
+            System.out.println(winner.getName() + " win ROUND "+ numberOfRounds +" score: "+winner.getScore());//view the round winner
 
         }
-        winner.clearHand();
-        // playerCard.clear();
+
         endGame=true;
+        System.out.println("EndGame ");
         return winner;
 
     }

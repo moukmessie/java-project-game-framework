@@ -7,12 +7,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class BoardGame implements Game {
-    protected String name; //permet de stocker un nom associé au jeu
-    protected Integer maxPlayer; //permet de savoir le nombre maximum attendu de joueurs pour le jeu
+    protected String name; //name associate with the game
+    protected Integer maxPlayer; //max player number in the game
 
-    protected List<Player> players; //stocke la liste des joueurs
-    protected Boolean endGame; //garde un état du jeu afin de savoir s’il est fini ou non
-    protected Boolean started; //permet de stocker un état du jeu afin de savoir s’il peut commencer ou non
+    protected List<Player> players; //list players
+    protected Boolean endGame; //endgame's status
+    protected Boolean started; //started's game status
 
 
     public BoardGame(String name, Integer maxPlayer, String filename) {

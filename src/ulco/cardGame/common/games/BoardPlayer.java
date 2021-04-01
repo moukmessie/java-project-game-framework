@@ -3,10 +3,10 @@ package ulco.cardGame.common.games;
 import ulco.cardGame.common.interfaces.Player;
 
 public abstract class BoardPlayer implements Player {
-    public String name; //le pseudo associé au joueur
-    public boolean playing; //un statut du joueur permettant de savoir s’il joue (associé à un jeu),
+    public String name; //nickname associated whith the player
+    public boolean playing; // player's status allowing them to know if they are playing
 
-    public Integer score; // score associé au joueur
+    public Integer score; // score associated with the player
 
 
     /**
@@ -20,6 +20,7 @@ public abstract class BoardPlayer implements Player {
     }
 
     /**
+     * specifies whether the player can play or can no longer play
      *spécifie si le joueur peut jouer ou ne peut plus jouer
      * @param playing
      */
