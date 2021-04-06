@@ -1,4 +1,4 @@
-package ulco.cardGame.common.games;
+package ulco.cardGame.common.players;
 
 import ulco.cardGame.common.interfaces.Player;
 
@@ -16,12 +16,12 @@ public abstract class BoardPlayer implements Player {
     public BoardPlayer(String name) {
         this.name = name;
         this.score=0;
+        // currently player is not playing...
         this.playing=false;
     }
 
     /**
      * specifies whether the player can play or can no longer play
-     *spécifie si le joueur peut jouer ou ne peut plus jouer
      * @param playing
      */
     public void canPlay(boolean playing){

@@ -2,101 +2,125 @@ package ulco.cardGame.common.games;
 
 import ulco.cardGame.common.interfaces.Game;
 import ulco.cardGame.common.interfaces.Player;
+import ulco.cardGame.common.players.BoardPlayer;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class BoardGame implements Game {
     protected String name; //name associate with the game
-    protected Integer maxPlayer; //max player number in the game
+    protected Integer maxPlayers; //max player number in the game
 
     protected List<Player> players; //list players
-    protected Boolean endGame; //endgame's status
-    protected Boolean started; //started's game status
+    protected boolean endGame; //endgame's status
+    protected boolean started; //started's game status
 
-
-    public BoardGame(String name, Integer maxPlayer, String filename) {
+    /**
+     * Enable constructor of Game
+     * - Name of the game
+     * - Maximum number of players of the Game
+     * - Filename with all required information to load the Game
+     * @param name
+     * @param maxPlayers
+     * @param filename
+     */
+    public BoardGame(String name, Integer maxPlayers, String filename) {
         this.name = name;
-        this.maxPlayer = maxPlayer;
-        this.started=false;
+        this.maxPlayers = maxPlayers;
         this.endGame=false;
         this.players = new ArrayList<>();
+
+        // initialize the Board Game using
         initialize(filename);
 
     }
 
     /**
-     *add player to ArrayList players
-     * méthode qui permet d’ajouter un joueur à la liste
-     * des joueurs
+     *add new  player inside the game only if possible
      * @param player
-     * @return
      */
     public boolean addPlayer(Player player){
 
-        if (players.size()<maxNumberOfPlayers() && !players.contains((player.getName()))) {
-            players.add(player);
-            return true;
+        // check number of authorized players in the game
+        if (this.players.size() < maxPlayers) {
+
+            // check if username already exists
+            long identical = this.players.stream().filter(x -> x.getName().equals(player.getName())).count();
+
+            if (identical > 0) {
+                return false;
+            }
+
+            // enable the fact player is now playing (playing state)
+            player.canPlay(true);
+
+            this.players.add((BoardPlayer) player);
+            System.out.println("Player added into players game list");
         }
-        return false;
+        else {
+            System.out.println("Maximum number of players already reached (max: " + maxPlayers.toString() + ")");
+            return false;
+        }
+
+        if (players.size() >= maxPlayers) {
+            started = true;
+        }
+
+        return true;
 
     }
 
     /**
-     * remove player to Arralist players
-     *méthode qui va supprimer un joueur de la liste
-     * des joueurs
+     * remove player from the game using the reference
      * @param player
      */
-
     public void removePlayer(Player player) {
-        players.remove(player);
+        // not forget to disconnect the player
+        this.players.remove(player);
     }
 
     /**
-     * remove all players in the game
-     * méthode qui va supprimer l’ensemble des joueurs présents dans
-     * le jeu
+     * remove players from the game
      */
     public void removePlayers(){
-        players.clear();
+        // not forget to disconnect the player
+        this.players.clear();
     }
 
     /**
      * view the status game/ view the game players
-     * méthode permettant d’afficher l’état d’un jeu. Ici, nous afficherons
-     * l’ensemble des joueurs présents
      */
     public void displayState(){
-        System.out.println("*********** Display State ***********");
+        // Display Game state
+        System.out.println("-------------------------------------------");
+        System.out.println("--------------- Game State ----------------");
+        System.out.println("-------------------------------------------");
+
         for(Player player : players){
             System.out.println(player);
         }
+        System.out.println("-------------------------------------------");
+
     }
 
     /***
-     * view the status game if is started or no
-     *méthode qui va spécifier si le jeu est commencé ou non
+     * view the status game if is started or not
      * @return
      */
     public boolean isStarted(){
-    return this.started;
+        return started;
     }
 
     /**
      * return the max number of players
-     * @returne le nombre maximum de joueurs attendu
      */
     public Integer maxNumberOfPlayers(){
-        return this.maxPlayer;
+        return this.maxPlayers;
     }
 
     /**
      * get the players Link game
-     *permet de récupérer la liste des joueurs du jeu en cours
-     * @return liste des joueur
      */
-
     public List<Player> getPlayers(){
       return this.players;
     }

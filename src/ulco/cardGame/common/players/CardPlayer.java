@@ -1,6 +1,8 @@
-package ulco.cardGame.common.games.components;
+package ulco.cardGame.common.players;
 
-import ulco.cardGame.common.games.BoardPlayer;
+import ulco.cardGame.common.games.components.Card;
+import ulco.cardGame.common.games.components.Component;
+
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,8 +10,12 @@ import java.util.List;
 
 public  class CardPlayer extends BoardPlayer {
 
-public List<Card> cards;
+public List<Component> cards;
 
+    /**
+     * Default inherited constructor
+     * @param name
+     */
     public CardPlayer(String name) {
         super(name);
         cards = new ArrayList<>();
@@ -22,13 +28,12 @@ public List<Card> cards;
 
     @Override
     public Card play() {
-        //return this.cards.remove(0) ;
-        Card cardRemove = null;
-        if(cards.size()>0){
-            cardRemove = cards.get(0);
-            cards.remove(cardRemove);
-        }
-        return cardRemove ;
+        Card cardToPlay = (Card)cards.get(0);
+
+        // Remove card from player hand and update score
+        this.removeComponent(cardToPlay);
+
+        return cardToPlay;
 
     }
 
@@ -36,31 +41,40 @@ public List<Card> cards;
     public void addComponent(Component component) {
 
         this.cards.add((Card) component);
-        this.score++;
+        // update current player score (cards in hand)
+        this.score = cards.size();
     }
 
     @Override
     public void removeComponent(Component component) {
 
-        this.cards.remove(component);
-       this.score--;
+        // Remove card from hand
+        cards.remove(component);
+        // update current player score (cards in hand)
+        this.score = cards.size();
     }
 
     @Override
     public List<Component> getComponents() {
 
-     return new ArrayList<>(this.cards);
+     return this.cards;
     }
 
     @Override
     public void shuffleHand() {
-
+        // prepare to shuffle hand
         Collections.shuffle(cards);
     }
 
     @Override
     public void clearHand() {
-      cards.clear();
+        // by default clear player hand
+        // unlink each card
+        for (Component card : cards) {
+            card.setPlayer(null);
+        }
+
+        this.cards = new ArrayList<>();
     }
 
     @Override

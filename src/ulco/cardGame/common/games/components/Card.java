@@ -9,10 +9,24 @@ public class Card extends Component {
      * @param value
      *
      */
-    public Card(String name, Integer value) {
 
+    public Card(String name, Integer value, boolean hidden) {
         super(name, value);
-        hidden=true;
+        this.hidden = hidden;
     }
 
+    public boolean isHidden() {
+        return hidden;
+    }
+
+    public void setHidden(boolean hidden) {
+        this.hidden = hidden;
+    }
+
+    @Override
+    public String toString() {
+        return "Card{" +
+                "name='" + name + '\'' +
+                '}';
+    }
 }
