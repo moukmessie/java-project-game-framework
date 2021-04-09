@@ -41,7 +41,8 @@ public abstract class Component {
     @Override
     public String toString() {
         return "Component{" +
-                "name='" + name + '\'' +
+                "id=" + id +
+                ", name='" + name + '\'' +
                 ", value=" + value +
                 '}';
     }

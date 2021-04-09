@@ -52,12 +52,25 @@ public interface Player {
     List<Component> getComponents();
 
     /**
-     * Shuffle components hand of current Player
+     * get different component list cards or coins
+     * @param classType
+     * @return list of component
      */
+    List<Component> getSpecificComponents(Class classType);
+
+
+        /**
+         * Shuffle components hand of current Player
+         */
     void shuffleHand();
 
     /**
      * Remove all components from Player hand
      */
     void clearHand();
+
+    /**
+     * view hand of player
+     */
+    void displayHand();
 }

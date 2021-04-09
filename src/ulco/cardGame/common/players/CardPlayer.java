@@ -60,6 +60,10 @@ public List<Component> cards;
      return this.cards;
     }
 
+    public List<Component> getSpecificComponents(Class classType){
+        return new ArrayList<>(cards);
+    }
+
     @Override
     public void shuffleHand() {
         // prepare to shuffle hand
@@ -75,6 +79,19 @@ public List<Component> cards;
         }
 
         this.cards = new ArrayList<>();
+    }
+
+
+
+    public void displayHand(){
+        System.out.println("-------------------------------------------");
+        System.out.println("-------- Hand of [" +getName() +"] --------");
+        System.out.println("-------------------------------------------");
+        for (Component card : cards){
+            System.out.println("Card: "+card.getName());
+        }
+        System.out.println("-----------------*********-----------------");
+
     }
 
     @Override

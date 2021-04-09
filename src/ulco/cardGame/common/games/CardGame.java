@@ -1,5 +1,6 @@
 package ulco.cardGame.common.games;
 
+import ulco.cardGame.common.games.boards.CardBoard;
 import ulco.cardGame.common.games.components.Card;
 import ulco.cardGame.common.interfaces.Player;
 
@@ -28,6 +29,7 @@ public class CardGame extends BoardGame {
      */
     public CardGame(String name, Integer maxPlayer, String filename) {
         super(name, maxPlayer, filename);
+        this.board = new CardBoard();
     }
 
     /**

@@ -81,7 +81,7 @@ public class PokerBoard implements Board {
     public void displayState() {
         Integer sum=0;
         System.out.println("-------------------------------------------");
-        System.out.println("--------------- Board State ----------------");
+        System.out.println("--------------- Board State ---------------");
         System.out.println("-------------------------------------------");
         //view cards
         for(Card card : cards){
@@ -89,7 +89,7 @@ public class PokerBoard implements Board {
            System.out.println("Card :" + card.getName());
         }
 
-        System.out.println("-------------------------------------------");
+        System.out.println("---------------***********-----------------");
 
         List<String>listcoins = new ArrayList<>();
 
@@ -103,8 +103,7 @@ public class PokerBoard implements Board {
         }
 
         System.out.println("Your Coins sum placed is about : "+sum);
-        System.out.println("-------------------------------------------");
-
+        System.out.println("---------------***********-----------------");
 
     }
 }
