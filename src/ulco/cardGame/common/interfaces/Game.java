@@ -61,4 +61,11 @@ public interface Game {
      * Such as user state (name and score)
      */
     void displayState();
+
+
+    /**
+     * Return the game Board
+     * @return
+     */
+    Board getBoard();
 }

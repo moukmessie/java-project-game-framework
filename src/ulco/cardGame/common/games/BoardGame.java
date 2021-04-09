@@ -1,5 +1,6 @@
 package ulco.cardGame.common.games;
 
+import ulco.cardGame.common.interfaces.Board;
 import ulco.cardGame.common.interfaces.Game;
 import ulco.cardGame.common.interfaces.Player;
 import ulco.cardGame.common.players.BoardPlayer;
@@ -14,6 +15,8 @@ public abstract class BoardGame implements Game {
     protected List<Player> players; //list players
     protected boolean endGame; //endgame's status
     protected boolean started; //started's game status
+    protected Board board;
+
 
     /**
      * Enable constructor of Game
@@ -123,5 +126,13 @@ public abstract class BoardGame implements Game {
      */
     public List<Player> getPlayers(){
       return this.players;
+    }
+
+    /**
+     *
+     * @return the board game
+     */
+    public Board getBoard() {
+        return this.board;
     }
 }
