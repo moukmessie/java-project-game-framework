@@ -5,9 +5,7 @@ import ulco.cardGame.common.games.components.Coin;
 import ulco.cardGame.common.games.components.Component;
 import ulco.cardGame.common.interfaces.Board;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class PokerBoard implements Board {
     List<Card> cards;
@@ -85,22 +83,38 @@ public class PokerBoard implements Board {
         System.out.println("-------------------------------------------");
         //view cards
         for(Card card : cards){
-
-           System.out.println("Card :" + card.getName());
+            if (!card.isHidden()) {
+                System.out.println("Card :" + card.getName());
+            }else{
+                System.out.println("card hidden");
+            }
         }
 
         System.out.println("---------------***********-----------------");
 
-        List<String>listcoins = new ArrayList<>();
+       // List<String>listcoins = new ArrayList<>();
+        HashMap<String, Integer> listcoins = new HashMap<>();
 
         for (Coin coin : coins){
-            listcoins.add(coin.getName());
+            //listcoins.add(coin.getName());
             sum+=coin.getValue();
+            if(!listcoins.containsKey(coin.getName())){
+                listcoins.put(coin.getName(), 1);
+            }else {
+                listcoins.replace(coin.getName(), listcoins.get(coin.getName())+1);
+            }
         }
 
-        for(int i=0; i<listcoins.size();i++){
+       /* for(int i=0; i<listcoins.size();i++){
             System.out.println("- Coin "+ listcoins.get(i)+ " x "+ Collections.frequency(listcoins,listcoins.get(i)));
+        }*/
+        for (Map.Entry<String, Integer>entry : listcoins.entrySet() ){
+            String color = entry.getKey();
+            Integer number = entry.getValue();
+
+            System.out.println("- Coin "+ color + " x "+number);
         }
+
 
         System.out.println("Your Coins sum placed is about : "+sum);
         System.out.println("---------------***********-----------------");
