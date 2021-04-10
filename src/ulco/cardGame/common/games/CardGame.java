@@ -90,7 +90,6 @@ public class CardGame extends BoardGame {
             }
         }
 
-
         // Send update of Game state for each player
         for (Player player : players) {
             System.out.println(player.getName() + " has " + player.getComponents().size() + " cards");

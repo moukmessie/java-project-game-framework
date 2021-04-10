@@ -1,14 +1,13 @@
 package ulco.cardGame.common.games.components;
 
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import ulco.cardGame.common.games.BoardGame;
 import ulco.cardGame.common.games.boards.PokerBoard;
 import ulco.cardGame.common.interfaces.Player;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class PokerGame extends BoardGame {
 
@@ -27,9 +26,10 @@ public class PokerGame extends BoardGame {
      * @param maxPlayers
      * @param filename
      */
-    public PokerGame(String name, Integer maxPlayers, String filename) {
+    public PokerGame(String name, Integer maxPlayers, String filename,Integer maxRounds) {
         super(name, maxPlayers, filename);
         this.board = new PokerBoard();
+        this.maxRounds=maxRounds;
     }
 
     @Override
@@ -70,12 +70,201 @@ public class PokerGame extends BoardGame {
 
     @Override
     public Player run() {
-        return null;
+        Player roundWinner=null;
+        Player winner=null;
+        Integer maxScore=0;
+        numberOfRounds=0;
+        Integer maxCardBoard=3;
+        List<Integer>cardsValues = new ArrayList<>();
+        //equality list
+        List<Player>Equal = new ArrayList<>();
+
+        //winner frequency
+        Integer winFrequency=1; Integer winValue=0;
+
+        //prepare to distribute coin to each player
+        Collections.shuffle(cards);
+        Collections.shuffle(coins);
+
+
+
+        int playerIndex = 0;
+        for (Coin coin : coins){
+            players.get(playerIndex).addComponent(coin);
+            coin.setPlayer(players.get(playerIndex));
+
+            playerIndex++;
+
+            if (playerIndex>= players.size()){
+                playerIndex=0;
+            }
+        }
+
+        while(!end()){
+            Collections.shuffle(cards);
+            board.clear();
+            System.out.println("---------- Rounds " + numberOfRounds+1+"------------");
+
+            //distribute three card to each player
+            for(int i=0; i<maxCardBoard;i++){
+                for (Player player : players){
+                    player.canPlay(true);
+
+                    Card card = cards.get(0);
+                    card.setHidden(false);//card visible
+                    player.addComponent(card);
+                    cards.remove(card);
+
+                }
+            }
+
+            //hide the remaining cards
+            for (Card card : cards){
+                card.setHidden(true);
+            }
+
+            // coin bet
+            for (Player player : players){
+                player.displayHand();//view Hands to each player
+
+               // if(player.getScore()==0) player.canPlay(false);
+               // Coin coin = (Coin)player.play();
+                Component coin = player.play();
+                if(coin==null){
+                    System.out.println(player.getName() + "fold !");
+                    player.canPlay(false);
+
+                }else{
+                    board.addComponent(coin);
+                }
+
+            }
+
+
+            //view cards on board to each player
+            for (int i=0; i<maxCardBoard; i++){
+                Card card = cards.get(0);
+                card.setHidden(false);//card visible
+                board.addComponent(card);
+                cards.remove(card);
+            }
+            //view board
+            board.displayState();
+
+            // coin bet 2
+            for (Player player : players){
+
+                player.displayHand();//view Hands to each player
+                if(player.getScore()==0) player.canPlay(false);
+                //Coin coin = (Coin)player.play();
+                Component coin = player.play();
+                if(coin==null){
+                    System.out.println(player.getName() + "fold !");
+                    player.canPlay(false);
+                }else{
+                    board.addComponent(coin);
+                }
+
+            }
+
+        }
+        System.out.println("-----------------------********-----------------");
+
+        for (Player player : players){
+          if(player.isPlaying()){
+              List<Component>cardPlayBoard = player.getSpecificComponents(Card.class);
+              //adding the player's cards to cardPlayBoard
+              cardPlayBoard.addAll(board.getSpecificComponents(Card.class));
+
+              //adding Component values to cardsValues list
+              for (Component card : cardPlayBoard){
+                cardsValues.add(card.getValue());
+
+              }
+              //frequency
+              Integer frequency; Integer maxFrequency = 1; Integer maxValue=0;
+
+              for (Integer value : cardsValues){
+                  frequency = Collections.frequency(cardsValues,value);
+                  if (frequency>maxFrequency){
+                      maxValue = value;
+                      maxFrequency =frequency;
+                      //High value and equality frequency
+                  }else if (frequency.equals(maxFrequency) && value> maxValue){
+                      maxValue=value;//update maxValue
+                  }
+              }
+
+
+
+
+                if (maxFrequency> winFrequency){
+                    roundWinner=player;
+                    winFrequency=maxFrequency;
+                    winValue=maxValue;
+
+                }else if (winFrequency.equals(maxFrequency) && maxValue>winValue){
+                    roundWinner=player;
+                    winValue=maxValue;
+                }else if (winFrequency.equals(maxFrequency)&& maxValue.equals(winValue)){
+                    System.out.println("Equality !");
+                    Equal.add(player);
+                    //Random winner
+                    Integer winnerIndex=0;
+                    if (Equal.size()>1){
+                        Random random = new Random();
+                        winnerIndex= random.nextInt(Equal.size()-1);
+                    }
+                    roundWinner = Equal.get(winnerIndex);
+                    winValue=maxValue;
+                }
+
+                System.out.println("Player "+player.getName() + " has "+ maxFrequency +" card(s) of value "+ maxValue );
+
+                cardsValues.clear();
+
+          }
+
+
+        }
+
+        System.out.println("Player " + roundWinner.getName() + " won the round  with " + winFrequency + " same card(s) of value " + winValue);
+        System.out.println("----------------------------------------------------------------");
+        System.out.println("----------End round N° "+ numberOfRounds+ " of "+ maxRounds);
+        displayState();
+        // roundWinner get coins from the board
+        for (Component coin : board.getSpecificComponents(Coin.class))
+        {
+            roundWinner.addComponent(coin);
+        }
+        //cards are removed from each player's hands
+        for (Player player : players){
+            List<Component>componentList = player.getSpecificComponents(Card.class);
+            for (Component component : componentList){
+                cards.add((Card)component);
+            }
+            player.clearHand();
+
+        }
+
+        //search winner game
+        for (Player player : players){
+
+            if (player.getScore()>maxScore){
+                winner=player;
+                maxScore=player.getScore();
+            }
+
+        }
+        displayState();
+        System.out.println(winner.getName()+" won the Game !! ");
+
+        return winner;
     }
 
     @Override
     public boolean end() {
-        if(numberOfRounds.equals(maxRounds)){
+        if(this.numberOfRounds.equals(this.maxRounds)){
             endGame=true;
             return true;
 
