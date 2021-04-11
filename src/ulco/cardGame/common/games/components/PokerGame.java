@@ -103,7 +103,7 @@ public class PokerGame extends BoardGame {
         while(!end()){
             Collections.shuffle(cards);
             board.clear();
-            System.out.println("---------- Rounds " + numberOfRounds+1+"------------");
+            System.out.println("---------- Rounds " + numberOfRounds++ +"------------");
 
             //distribute three card to each player
             for(int i=0; i<maxCardBoard;i++){
@@ -128,7 +128,7 @@ public class PokerGame extends BoardGame {
                 player.displayHand();//view Hands to each player
 
                // if(player.getScore()==0) player.canPlay(false);
-               // Coin coin = (Coin)player.play();
+              //  Coin coin = (Coin)player.play();
                 Component coin = player.play();
                 if(coin==null){
                     System.out.println(player.getName() + "fold !");
@@ -194,8 +194,6 @@ public class PokerGame extends BoardGame {
                       maxValue=value;//update maxValue
                   }
               }
-
-
 
 
                 if (maxFrequency> winFrequency){

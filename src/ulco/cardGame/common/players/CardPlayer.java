@@ -10,7 +10,7 @@ import java.util.List;
 
 public  class CardPlayer extends BoardPlayer {
 
-public List<Component> cards;
+public List<Card> cards;
 
     /**
      * Default inherited constructor
@@ -18,7 +18,7 @@ public List<Component> cards;
      */
     public CardPlayer(String name) {
         super(name);
-        cards = new ArrayList<>();
+        cards = new ArrayList<Card>();
     }
 
     @Override
@@ -57,7 +57,7 @@ public List<Component> cards;
     @Override
     public List<Component> getComponents() {
 
-     return this.cards;
+        return new ArrayList<>(cards);
     }
 
     public List<Component> getSpecificComponents(Class classType){

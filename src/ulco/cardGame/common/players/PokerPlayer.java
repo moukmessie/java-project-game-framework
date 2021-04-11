@@ -30,22 +30,30 @@ public class PokerPlayer extends BoardPlayer{
     public Component play() {
         Scanner scanner = new Scanner(System.in);
         boolean scan = false;
-        Coin coin =null;
+        Coin coinPlay =null;
 
         while (!scan){
-            System.out.println("["+getName()+"]"+ ", please select a valid Coin to play (Coin color)");
+
+
+            System.out.println("["+getName()+"]"+ ", please select a valid Coin to play (Coin color) or skip");
             String color = scanner.nextLine();
-            for (Coin c : coins){
-                if (coin.getName().equals(color)){
+
+            if (color.equals("skip"))
+            {
+                return null;
+            }
+
+            for(Coin coin : coins){
+                if (coin.getName().equals(scanner)){
                     scan=true;
-                    coin = c;
-                    break;
+                    coinPlay=coin;
                 }
+
             }
 
         }
-        this.removeComponent(coin);
-        return coin;
+        this.removeComponent(coinPlay);
+        return coinPlay;
     }
 
     @Override
