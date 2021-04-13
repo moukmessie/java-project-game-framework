@@ -2,9 +2,10 @@ package ulco.cardGame.common.interfaces;
 
 import ulco.cardGame.common.games.components.Component;
 
+import java.io.Serializable;
 import java.util.List;
 
-public interface Player {
+public interface Player extends Serializable {
 
     /**
      * Get name of the current Player
@@ -52,16 +53,15 @@ public interface Player {
     List<Component> getComponents();
 
     /**
-     * get different component list cards or coins
+     * Return specific expected components depending of class name
      * @param classType
-     * @return list of component
+     * @return
      */
     List<Component> getSpecificComponents(Class classType);
 
-
-        /**
-         * Shuffle components hand of current Player
-         */
+    /**
+     * Shuffle components hand of current Player
+     */
     void shuffleHand();
 
     /**
@@ -70,7 +70,7 @@ public interface Player {
     void clearHand();
 
     /**
-     * view hand of player
+     * Display some expected component of player
      */
     void displayHand();
 }

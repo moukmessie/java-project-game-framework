@@ -1,8 +1,12 @@
 package ulco.cardGame.common.interfaces;
 
+import java.io.IOException;
+import java.io.Serializable;
+import java.net.Socket;
 import java.util.List;
+import java.util.Map;
 
-public interface Game {
+public interface Game extends Serializable {
 
     /**
      * Initialize the whole game using a parameter file
@@ -15,12 +19,12 @@ public interface Game {
      * @return
      */
     Player run();
-
+    //Player run(Map<Player, Socket>);
     /**
      * Add player to the current Game
      * @param player
      */
-    boolean addPlayer(Player player);
+    boolean addPlayer(Player player,Socket soket) throws IOException;
 
     /**
      * Remove player from the game using the reference
@@ -62,10 +66,8 @@ public interface Game {
      */
     void displayState();
 
-
     /**
-     * Return the game Board
-     * @return
+     * Get access to the current board of the Game
      */
     Board getBoard();
 }

@@ -3,14 +3,13 @@ package ulco.cardGame.common.players;
 import ulco.cardGame.common.games.components.Card;
 import ulco.cardGame.common.games.components.Component;
 
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public  class CardPlayer extends BoardPlayer {
+public class CardPlayer extends BoardPlayer {
 
-public List<Card> cards;
+    private List<Component> cards;
 
     /**
      * Default inherited constructor
@@ -18,7 +17,7 @@ public List<Card> cards;
      */
     public CardPlayer(String name) {
         super(name);
-        cards = new ArrayList<Card>();
+        this.cards = new ArrayList<>();
     }
 
     @Override
@@ -27,20 +26,19 @@ public List<Card> cards;
     }
 
     @Override
-    public Card play() {
+    public Card play()  {
+
         Card cardToPlay = (Card)cards.get(0);
 
-        // Remove card from player hand and update score
+        // Remove card from  player hand
         this.removeComponent(cardToPlay);
 
         return cardToPlay;
-
     }
 
     @Override
     public void addComponent(Component component) {
-
-        this.cards.add((Card) component);
+        cards.add((Card) component);
         // update current player score (cards in hand)
         this.score = cards.size();
     }
@@ -50,18 +48,20 @@ public List<Card> cards;
 
         // Remove card from hand
         cards.remove(component);
+
         // update current player score (cards in hand)
         this.score = cards.size();
     }
 
     @Override
     public List<Component> getComponents() {
-
-        return new ArrayList<>(cards);
+        return this.cards;
     }
 
-    public List<Component> getSpecificComponents(Class classType){
-        return new ArrayList<>(cards);
+    @Override
+    public List<Component> getSpecificComponents(Class classType) {
+        // By default
+        return new ArrayList<>(this.cards);
     }
 
     @Override
@@ -72,6 +72,7 @@ public List<Card> cards;
 
     @Override
     public void clearHand() {
+
         // by default clear player hand
         // unlink each card
         for (Component card : cards) {
@@ -81,26 +82,23 @@ public List<Card> cards;
         this.cards = new ArrayList<>();
     }
 
+    /**
+     * Display some expected components of player
+     *  - number of Cards
+     */
+    @Override
+    public void displayHand() {
 
-
-    public void displayHand(){
-        System.out.println("-------------------------------------------");
-        System.out.println("-------- Hand of [" +getName() +"] --------");
-        System.out.println("-------------------------------------------");
-        for (Component card : cards){
-            System.out.println("Card: "+card.getName());
-        }
-        System.out.println("-----------------*********-----------------");
-
+        System.out.println("------------- Your hand -------------");
+        System.out.println("Cards: " + cards.size());
+        System.out.println("-------------------------------------");
     }
 
     @Override
     public String toString() {
         return "CardPlayer{" +
-                "name='" + getName() + '\'' +
-                ", score=" + getScore() +
+                "name='" + name + '\'' +
+                ", score=" + score +
                 '}';
     }
-
-
 }

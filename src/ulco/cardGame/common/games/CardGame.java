@@ -8,41 +8,35 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
 
-
 /**
  * CardGame which extend BoardGame
  * BoardGame need to implement Game interface methods
  */
 public class CardGame extends BoardGame {
 
-    private List <Card> cards; // a list of cards, of type Card
-    private Integer numberOfRounds ; //a counter allowing to know the number of completed rounds
-
+    private List<Card> cards;
+    private Integer numberOfRounds;
 
     /**
      * Enable constructor of CardGame
      * - Name of the game
      * - Maximum number of players of the Game
+     *  - Filename of current Game
      * @param name
-     * @param maxPlayer
+     * @param maxPlayers
      * @param filename
      */
-    public CardGame(String name, Integer maxPlayer, String filename) {
-        super(name, maxPlayer, filename);
-        this.board = new CardBoard();
-    }
+    public CardGame(String name, Integer maxPlayers, String filename) {
+        super(name, maxPlayers, filename);
 
-    /**
-     * method that loads the contents of the game file and
-     *  initializes the card game accordingly (the card list)
-     * @param filename
-     */
+        this.board = new CardBoard();
+        this.numberOfRounds = 0;
+    }
 
     @Override
     public void initialize(String filename) {
 
         this.cards = new ArrayList<>();
-        this.numberOfRounds = 0;
 
         // Here initialize the list of Cards
         try {
@@ -65,12 +59,9 @@ public class CardGame extends BoardGame {
         }
     }
 
-    /**
-     * method associated with the game loop
-     * @return agmewinner
-     */
     @Override
     public Player run() {
+
         Player gameWinner = null;
 
         // prepare to distribute card to each player
@@ -90,6 +81,7 @@ public class CardGame extends BoardGame {
             }
         }
 
+
         // Send update of Game state for each player
         for (Player player : players) {
             System.out.println(player.getName() + " has " + player.getComponents().size() + " cards");
@@ -108,14 +100,21 @@ public class CardGame extends BoardGame {
                 // Get card played by current player
                 Card card = (Card) player.play();
 
+                // add card inside board
+                board.addComponent(card);
+
                 // Keep knowledge of card played
                 playedCard.put(player, card);
 
                 System.out.println(player.getName() + " has played " + card.getName());
             }
 
+            // display board state
+            board.displayState();
+
             // Check which player has win
             int bestValueCard = 0;
+
             List<Player> possibleWinner = new ArrayList<>();
             List<Card> possibleWinnerCards = new ArrayList<>();
 
@@ -158,11 +157,17 @@ public class CardGame extends BoardGame {
                 card.setPlayer(roundWinner);
             }
 
+            // clear board state
+            board.clear();
+
             // Check players State
             for (Player player : players){
+
+                // player cannot still play if no card in hand
                 if (player.getScore() == 0)
                     player.canPlay(false);
 
+                // player win if all cards are in his hand
                 if (player.getScore() == cards.size()) {
                     player.canPlay(false);
                     gameWinner = player;
@@ -184,7 +189,6 @@ public class CardGame extends BoardGame {
 
         return gameWinner;
     }
-
 
     @Override
     public boolean end() {

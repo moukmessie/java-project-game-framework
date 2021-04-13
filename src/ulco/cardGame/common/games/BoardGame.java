@@ -5,18 +5,21 @@ import ulco.cardGame.common.interfaces.Game;
 import ulco.cardGame.common.interfaces.Player;
 import ulco.cardGame.common.players.BoardPlayer;
 
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class BoardGame implements Game {
-    protected String name; //name associate with the game
-    protected Integer maxPlayers; //max player number in the game
 
-    protected List<Player> players; //list players
-    protected boolean endGame; //endgame's status
-    protected boolean started; //started's game status
+    protected String name;
+    protected Integer maxPlayers;
+    protected List<Player> players;
+    protected boolean endGame;
+    protected boolean started;
     protected Board board;
-
 
     /**
      * Enable constructor of Game
@@ -30,20 +33,22 @@ public abstract class BoardGame implements Game {
     public BoardGame(String name, Integer maxPlayers, String filename) {
         this.name = name;
         this.maxPlayers = maxPlayers;
-        this.endGame=false;
+        this.endGame = false;
         this.players = new ArrayList<>();
 
         // initialize the Board Game using
-        initialize(filename);
-
+        this.initialize(filename);
     }
 
+
+
     /**
-     *add new  player inside the game only if possible
+     * Add new players inside the game only if possible
      * @param player
      */
-    public boolean addPlayer(Player player){
-
+    @Override
+    public boolean addPlayer(Player player, Socket socket) throws IOException {
+        ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
         // check number of authorized players in the game
         if (this.players.size() < maxPlayers) {
 
@@ -51,6 +56,7 @@ public abstract class BoardGame implements Game {
             long identical = this.players.stream().filter(x -> x.getName().equals(player.getName())).count();
 
             if (identical > 0) {
+                oos.writeObject(" this username is already assigned !");
                 return false;
             }
 
@@ -59,8 +65,12 @@ public abstract class BoardGame implements Game {
 
             this.players.add((BoardPlayer) player);
             System.out.println("Player added into players game list");
+
         }
         else {
+
+            oos.writeObject("Maximum number of players already reached");
+
             System.out.println("Maximum number of players already reached (max: " + maxPlayers.toString() + ")");
             return false;
         }
@@ -70,69 +80,57 @@ public abstract class BoardGame implements Game {
         }
 
         return true;
-
     }
 
     /**
-     * remove player from the game using the reference
+     * Remove player from the game using the reference
      * @param player
      */
+    @Override
     public void removePlayer(Player player) {
         // not forget to disconnect the player
         this.players.remove(player);
     }
 
     /**
-     * remove players from the game
+     * Remove players from the game
      */
+    @Override
     public void removePlayers(){
         // not forget to disconnect the player
         this.players.clear();
     }
 
-    /**
-     * view the status game/ view the game players
-     */
-    public void displayState(){
+    @Override
+    public void displayState() {
+
         // Display Game state
         System.out.println("-------------------------------------------");
         System.out.println("--------------- Game State ----------------");
         System.out.println("-------------------------------------------");
-
-        for(Player player : players){
-            System.out.println(player);
+        for (Player currentPlayer : players) {
+            System.out.println(currentPlayer);
         }
         System.out.println("-------------------------------------------");
-
     }
 
-    /***
-     * view the status game if is started or not
-     * @return
-     */
-    public boolean isStarted(){
+    @Override
+    public boolean isStarted() {
         return started;
     }
 
-    /**
-     * return the max number of players
-     */
-    public Integer maxNumberOfPlayers(){
-        return this.maxPlayers;
+    @Override
+    public Integer maxNumberOfPlayers() {
+        return maxPlayers;
     }
 
-    /**
-     * get the players Link game
-     */
-    public List<Player> getPlayers(){
-      return this.players;
+    @Override
+    public List<Player> getPlayers() {
+        return players;
     }
 
-    /**
-     *
-     * @return the board game
-     */
+    @Override
     public Board getBoard() {
-        return this.board;
+        return board;
     }
 }

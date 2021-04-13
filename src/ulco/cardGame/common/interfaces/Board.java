@@ -2,37 +2,36 @@ package ulco.cardGame.common.interfaces;
 
 import ulco.cardGame.common.games.components.Component;
 
+import java.io.Serializable;
 import java.util.List;
 
-public interface Board {
-
+public interface Board extends Serializable {
     /**
-     * Clear Board game
+     * Remove all components from the board (possible new round)
      */
-     void clear();
+    void clear();
 
     /**
-     * Add new component linked to Board
+     * Add component into board Game
+     * @param component
      */
-     void addComponent(Component component);
+    void addComponent(Component component);
 
     /**
-     * Get  component in Board
-     * @return list of components
+     * Get all components of the board Game
+     * @return
      */
     List<Component> getComponents();
 
     /**
-     *
+     * Return specific expected components depending of class name
      * @param classType
-     * @return cards
+     * @return
      */
     List<Component> getSpecificComponents(Class classType);
 
     /**
-     * Display current Game state
+     * Display the current board state
      */
     void displayState();
-
-
 }

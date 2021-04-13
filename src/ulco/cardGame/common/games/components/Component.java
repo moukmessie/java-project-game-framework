@@ -2,9 +2,10 @@ package ulco.cardGame.common.games.components;
 
 import ulco.cardGame.common.interfaces.Player;
 
-public abstract class Component {
+import java.io.Serializable;
 
-    // variable which enables to count number of elements
+public abstract class Component  implements Serializable {
+
     private static Integer nComponents = 0;
     protected Integer id;
     protected String name;
@@ -41,8 +42,7 @@ public abstract class Component {
     @Override
     public String toString() {
         return "Component{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
+                "name='" + name + '\'' +
                 ", value=" + value +
                 '}';
     }

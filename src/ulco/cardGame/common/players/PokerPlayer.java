@@ -6,137 +6,156 @@ import ulco.cardGame.common.games.components.Component;
 
 import java.util.*;
 
-public class PokerPlayer extends BoardPlayer{
-        List<Card>cards;
-        List<Coin>coins;
+public class PokerPlayer extends BoardPlayer {
 
-    /**
-     * constructor
-     *
-     * @param name
-     */
+    private List<Card> cards;
+    private List<Coin> coins;
+
     public PokerPlayer(String name) {
         super(name);
-        cards = new ArrayList<>();
-        coins = new ArrayList<>();
+
+        this.cards = new ArrayList<>();
+        this.coins = new ArrayList<>();
     }
 
     @Override
     public Integer getScore() {
-        return this.getScore();
+
+        return score;
     }
 
     @Override
     public Component play() {
+        this.displayHand();
+
         Scanner scanner = new Scanner(System.in);
-        boolean scan = false;
-        Coin coinPlay =null;
+        Component coinToPlay = null;
+        boolean correctCoin = false;
 
-        while (!scan){
+        do {
 
+            System.out.println("[" + this.getName() + "], please select a valid Coin to play (coin color)");
+            String value = scanner.nextLine();
 
-            System.out.println("["+getName()+"]"+ ", please select a valid Coin to play (Coin color) or skip");
-            String color = scanner.nextLine();
-
-            if (color.equals("skip"))
-            {
-                return null;
-            }
-
-            for(Coin coin : coins){
-                if (coin.getName().equals(scanner)){
-                    scan=true;
-                    coinPlay=coin;
+            for (Coin coin : coins) {
+                if (coin.getName().equals(value)) {
+                    coinToPlay = coin;
+                    correctCoin = true;
                 }
-
             }
 
-        }
-        this.removeComponent(coinPlay);
-        return coinPlay;
+        } while(!correctCoin);
+
+        // Remove card from  player hand
+        this.removeComponent(coinToPlay);
+
+        return coinToPlay;
     }
 
     @Override
     public void addComponent(Component component) {
-        if (component instanceof Card){
+
+        if (component instanceof Card)
             cards.add((Card)component);
-        }else if (component instanceof Coin){
-            coins.add((Coin)component);
-            score+=component.getValue();
+        if (component instanceof Coin) {
+            coins.add((Coin) component);
+            this.score += component.getValue();
         }
     }
 
     @Override
     public void removeComponent(Component component) {
-        if (component instanceof Card){
-            cards.remove((Card)component);
-        }else if (component instanceof Coin){
-            coins.remove((Coin)component);
-            score-=component.getValue();
-        }
 
+        if (component instanceof Card)
+            cards.remove(component);
+
+        // if coin component, we need to update the current score
+        if (component instanceof Coin) {
+            coins.remove(component);
+            this.score -= component.getValue();
+        }
     }
 
     @Override
     public List<Component> getComponents() {
-        List<Component>componentList = new ArrayList<>();
-        componentList.addAll(cards);
-        componentList.addAll(coins);
-        return componentList;
+
+        List<Component> components = new ArrayList<>();
+
+        // add all known components
+        components.addAll(cards);
+        components.addAll(coins);
+
+        return components;
     }
 
-    public List<Component> getSpecificComponents(Class classType){
-        if (classType == Card.class){
-            return new ArrayList<>(cards);
-        }else if (classType == Coin.class){
-            return new ArrayList<>(coins);
-        }
-        return null;
+    @Override
+    public List<Component> getSpecificComponents(Class classType) {
+
+        // create empty list
+        List<Component> components = new ArrayList<>();
+
+        // Add expected elements inside this new list
+        if (classType == Card.class)
+            components.addAll(cards);
+
+        if (classType == Coin.class)
+            components.addAll(coins);
+
+        return components;
     }
 
     @Override
     public void shuffleHand() {
+        // prepare to shuffle hand
         Collections.shuffle(cards);
-
     }
 
     @Override
     public void clearHand() {
+
+        // by default clear player hand
+        // unlink each card
+        for (Card card : cards) {
+            card.setPlayer(null);
+        }
+
+        // only clear cards for this round
         this.cards.clear();
     }
-    public void displayHand(){
-        Integer sum=0;
-        System.out.println("------------------------------------------");
-        System.out.println("-------- Hand of [" +getName() +"] --------");
-        System.out.println("-------------------------------------------");
-        for (Component card : cards){
-            System.out.println("Card: "+card.getName());
-        }
-        System.out.println("-----------------*********-----------------");
 
-       // List<String>listcoins = new ArrayList<>();
-        HashMap<String, Integer> listcoins = new HashMap<>();
+    /**
+     * Display some expected components of player
+     *  - Cards
+     *  - Sum of coins in hand
+     */
+    @Override
+    public void displayHand() {
 
-        for (Coin coin : coins){
-            if(!listcoins.containsKey(coin.getName())){
-                listcoins.put(coin.getName(), 1);
-            }else {
-                listcoins.replace(coin.getName(), listcoins.get(coin.getName())+1);
-            }
-
+        System.out.println("-------------------------------------");
+        System.out.println("Hand of [" + this.getName() + "]");
+        System.out.println("              ---------              ");
+        for (Card card : cards) {
+            System.out.println("Card: " + card.getName());
         }
 
-        for (Map.Entry<String, Integer>entry : listcoins.entrySet() ){
-            String color = entry.getKey();
-            Integer number = entry.getValue();
+        Integer coinSum = 0;
+        Map<String, Integer> coinsNumber = new HashMap<>();
 
-            System.out.println("- Coin "+ color + " x "+number);
+        for (Coin coin : coins) {
+            coinSum += coin.getValue();
+
+            coinsNumber.merge(coin.getName(), 1, Integer::sum);
         }
 
-        System.out.println(getName() + " Coins sum  : " +getScore());
-        System.out.println("---------------***********-----------------");
+        System.out.println("              ---------              ");
 
+        // Display coin occurrences
+        for (Map.Entry<String, Integer> entry : coinsNumber.entrySet()) {
+            System.out.println(" - Coin " + entry.getKey() + " x " + entry.getValue());
+        }
 
+        System.out.println("Your Coins sum is about: " + coinSum);
+        System.out.println("-------------------------------------");
     }
 
     @Override

@@ -7,56 +7,49 @@ import ulco.cardGame.common.interfaces.Board;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CardBoard implements Board {
-    List<Card>cards;
+/**
+ * Specific board for Card Game
+ */
+public class CardBoard  implements Board {
 
-    /**
-     * CardBoard constructor
-     */
+    private List<Card> cards;
+
     public CardBoard() {
-        this.cards=new ArrayList<>();
+
+        cards = new ArrayList<>();
     }
 
-    /**
-     * clear cardBoard
-     */
     @Override
     public void clear() {
-        cards.clear();
+        this.cards.clear();
     }
 
-    /**
-     * add component to cards list
-     * @param component
-     */
     @Override
     public void addComponent(Component component) {
         this.cards.add((Card)component);
     }
 
-    /**
-     * Get all component in Player hand
-     * @return
-     */
     @Override
     public List<Component> getComponents() {
-        return new ArrayList<>(cards);
+        return new ArrayList<>(this.cards);
+    }
+
+    @Override
+    public List<Component> getSpecificComponents(Class classType) {
+        // By default
+        return new ArrayList<>(this.cards);
     }
 
     /**
-     * get different component list cards or coins
-     * @param componentClass
-     * @return
+     * Display the current board state
+     * - Current card enable in game
      */
-    @Override
-    public List<Component> getSpecificComponents(Class componentClass) {
-        return new ArrayList<>(cards);
-    }
-
-    @Override
     public void displayState() {
-        for (Card card : cards){
-            System.out.println(card.getPlayer().getName() +", played "+ card.getName());
+
+        System.out.println("-------------- Board state -------------");
+        for (Card card : cards) {
+            System.out.println(card.getName() + " played by " + card.getPlayer().getName());
         }
+        System.out.println("----------------------------------------");
     }
 }

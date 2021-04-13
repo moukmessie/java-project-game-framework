@@ -5,119 +5,94 @@ import ulco.cardGame.common.games.components.Coin;
 import ulco.cardGame.common.games.components.Component;
 import ulco.cardGame.common.interfaces.Board;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class PokerBoard implements Board {
-    List<Card> cards;
-    List<Coin>coins;
 
-    /**
-     *  PokerBoard constructor
-     */
+    private List<Card> cards;
+    private List<Coin> coins;
+
     public PokerBoard() {
         this.cards = new ArrayList<>();
-        this.coins= new ArrayList<>();
-
+        this.coins = new ArrayList<>();
     }
 
-    /**
-     * List cleaning
-      */
     @Override
     public void clear() {
-       this.cards.clear();
-       this.coins.clear();
+        this.cards.clear();
+        this.coins.clear();
     }
 
-    /**
-     * add component in List / cards or coins
-     * @param component
-     */
     @Override
     public void addComponent(Component component) {
-      if(component.getClass() == Card.class){
-          this.cards.add((Card)component);
-      }else if (component.getClass() == Coin.class) {
-          this.coins.add((Coin) component);
-      }
 
+        if (component instanceof Card)
+            cards.add((Card)component);
+        if (component instanceof Coin)
+            coins.add((Coin)component);
     }
 
-    /**
-     * get all component cards and coins
-     * @return
-     */
     @Override
     public List<Component> getComponents() {
-        List<Component>componentList = new ArrayList<>();
-       componentList.addAll(coins);
-       componentList.addAll(cards);
-        return componentList;
+
+        List<Component> components = new ArrayList<>();
+
+        // add all known components
+        components.addAll(cards);
+        components.addAll(coins);
+
+        return components;
     }
 
-    /**
-     * get different component list cards or coins
-     * @param classType
-     * @return
-     */
     @Override
     public List<Component> getSpecificComponents(Class classType) {
 
-        if (classType == Card.class){
-            return new ArrayList<>(cards);
-        }else if (classType == Coin.class){
-            return new ArrayList<>(coins);
-        }
-       return null;
+        // create empty list
+        List<Component> components = new ArrayList<>();
+
+        // Add expected elements inside this new list
+        if (classType == Card.class)
+            components.addAll(cards);
+
+        if (classType == Coin.class)
+            components.addAll(coins);
+
+        return components;
     }
 
     /**
-     * state Poker board view
+     * Display the current board state
+     * - Enable card displayed
+     * - Sum of coin placed
      */
-
     @Override
     public void displayState() {
-        Integer sum=0;
-        System.out.println("-------------------------------------------");
-        System.out.println("--------------- Board State ---------------");
-        System.out.println("-------------------------------------------");
-        //view cards
-        for(Card card : cards){
-            if (!card.isHidden()) {
-                System.out.println("Card :" + card.getName());
-            }else{
-                System.out.println("card hidden");
-            }
+
+        System.out.println("-------------- Board state -------------");
+        for (Card card : cards) {
+            System.out.println(" - Card: " + card.getName());
         }
 
-        System.out.println("---------------***********-----------------");
+        Integer coinSum = 0;
+        Map<String, Integer> coinsNumber = new HashMap<>();
 
-       // List<String>listcoins = new ArrayList<>();
-        HashMap<String, Integer> listcoins = new HashMap<>();
+        for (Coin coin : coins) {
+            coinSum += coin.getValue();
 
-        for (Coin coin : coins){
-            //listcoins.add(coin.getName());
-            sum+=coin.getValue();
-            if(!listcoins.containsKey(coin.getName())){
-                listcoins.put(coin.getName(), 1);
-            }else {
-                listcoins.replace(coin.getName(), listcoins.get(coin.getName())+1);
-            }
+            coinsNumber.merge(coin.getName(), 1, Integer::sum);
         }
 
-       /* for(int i=0; i<listcoins.size();i++){
-            System.out.println("- Coin "+ listcoins.get(i)+ " x "+ Collections.frequency(listcoins,listcoins.get(i)));
-        }*/
-        for (Map.Entry<String, Integer>entry : listcoins.entrySet() ){
-            String color = entry.getKey();
-            Integer number = entry.getValue();
+        System.out.println("               ---------                ");
 
-            System.out.println("- Coin "+ color + " x "+number);
+        // Display coin occurrences
+        for (Map.Entry<String, Integer> entry : coinsNumber.entrySet()) {
+            System.out.println(" - Coin " + entry.getKey() + " x " + entry.getValue());
         }
 
-
-        System.out.println("Your Coins sum placed is about : "+sum);
-        System.out.println("---------------***********-----------------");
-
+        System.out.println("Your Coins sum placed is about: " + coinSum);
+        System.out.println("----------------------------------------");
     }
 }
