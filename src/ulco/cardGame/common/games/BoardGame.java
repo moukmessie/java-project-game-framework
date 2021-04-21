@@ -48,7 +48,7 @@ public abstract class BoardGame implements Game {
      */
     @Override
     public boolean addPlayer(Player player, Socket socket) throws IOException {
-        ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+
         // check number of authorized players in the game
         if (this.players.size() < maxPlayers) {
 
@@ -56,7 +56,9 @@ public abstract class BoardGame implements Game {
             long identical = this.players.stream().filter(x -> x.getName().equals(player.getName())).count();
 
             if (identical > 0) {
-                oos.writeObject(" this username is already assigned !");
+                ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+              oos.writeObject("assigned");
+
                 return false;
             }
 
@@ -68,9 +70,8 @@ public abstract class BoardGame implements Game {
 
         }
         else {
-
-            oos.writeObject("Maximum number of players already reached");
-
+            ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+            oos.writeObject("Maximum");
             System.out.println("Maximum number of players already reached (max: " + maxPlayers.toString() + ")");
             return false;
         }
@@ -100,7 +101,14 @@ public abstract class BoardGame implements Game {
         // not forget to disconnect the player
         this.players.clear();
     }
-
+    public Player getCurrentPlayer(String username){
+        for (Player player : players) {
+            if (player.getName().equals(username)) {
+                return player;
+            }
+        }
+        return null;
+    }
     @Override
     public void displayState() {
 

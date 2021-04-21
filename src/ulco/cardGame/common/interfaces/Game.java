@@ -18,8 +18,7 @@ public interface Game extends Serializable {
      *
      * @return
      */
-    Player run();
-    //Player run(Map<Player, Socket>);
+    Player run(Map <Player, Socket> playerSocketMap ) throws IOException, ClassNotFoundException;
     /**
      * Add player to the current Game
      * @param player
@@ -70,4 +69,6 @@ public interface Game extends Serializable {
      * Get access to the current board of the Game
      */
     Board getBoard();
+
+    Player getCurrentPlayer(String username);
 }

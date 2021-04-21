@@ -4,6 +4,10 @@ import ulco.cardGame.common.games.components.Card;
 import ulco.cardGame.common.games.components.Coin;
 import ulco.cardGame.common.games.components.Component;
 
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.net.Socket;
 import java.util.*;
 
 public class PokerPlayer extends BoardPlayer {
@@ -25,7 +29,7 @@ public class PokerPlayer extends BoardPlayer {
     }
 
     @Override
-    public Component play() {
+    public void play(Socket socket) throws IOException {
         this.displayHand();
 
         Scanner scanner = new Scanner(System.in);
@@ -35,11 +39,14 @@ public class PokerPlayer extends BoardPlayer {
         do {
 
             System.out.println("[" + this.getName() + "], please select a valid Coin to play (coin color)");
+
             String value = scanner.nextLine();
 
             for (Coin coin : coins) {
                 if (coin.getName().equals(value)) {
+                    ObjectOutputStream coinToplay = new ObjectOutputStream(socket.getOutputStream());
                     coinToPlay = coin;
+                    coinToplay.writeObject(coinToPlay);
                     correctCoin = true;
                 }
             }
@@ -47,9 +54,9 @@ public class PokerPlayer extends BoardPlayer {
         } while(!correctCoin);
 
         // Remove card from  player hand
-        this.removeComponent(coinToPlay);
+       // this.removeComponent(coinToPlay);
 
-        return coinToPlay;
+       // return coinToPlay;
     }
 
     @Override

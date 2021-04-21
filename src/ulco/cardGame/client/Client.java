@@ -1,5 +1,7 @@
 package ulco.cardGame.client;
 
+import ulco.cardGame.common.games.components.Card;
+import ulco.cardGame.common.interfaces.Board;
 import ulco.cardGame.common.interfaces.Game;
 import ulco.cardGame.server.SocketServer;
 
@@ -24,34 +26,56 @@ public class Client {
 
             Object answer;
             String username;
-
-            Scanner scanner = new Scanner(System.in);
-
-            System.out.println("Please select your username");
-            username = scanner.nextLine();
-
-            socket = new Socket(host.getHostName(), SocketServer.PORT);
-
-            ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
-            oos.writeObject(username);
+            Game game=null;
 
             do {
+
+                socket = new Socket(host.getHostName(), SocketServer.PORT);
+
+                Scanner scanner=new Scanner(System.in);
+
+                System.out.println("Please select your username");
+                username = scanner.nextLine();
+
+                ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());  //lecture puis envoie du username au serveur
+                oos.writeObject(username);
+
                 // Read and display the response message sent by server application
                 ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
                 answer = ois.readObject();
+                System.out.println(answer.toString());
 
-                // depending of object type, we can manage its data
-                if (answer instanceof String){
-                    //System.out.println(answer.toString());
-                    if ((answer.toString()).equals("maxNumber")){
+            } while (!(answer instanceof Game));
 
-                    }
+            ((Game)answer).displayState();
+            game=(Game)answer;
+
+            Board board;
+
+            do {
+                ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
+                answer = ois.readObject();
+
+                if (answer instanceof Game) {
+                    game = (Game)answer;
+                    game.displayState();
                 }
 
-                if (answer instanceof Game)
-                    ((Game)answer).displayState();
+                if (answer instanceof Board) {
+                    board = (Board)answer;
+                    board.displayState();
+                }
 
-            } while (!answer.equals("END"));
+                if (answer instanceof String) {
+                    System.out.println(answer);
+
+                    if (((String) answer).contains("you have to play")){
+                        game.getCurrentPlayer(username).play(socket);
+                    }
+
+                }
+
+            }while (!answer.equals("END"));
 
             // close the socket instance connection
             socket.close();

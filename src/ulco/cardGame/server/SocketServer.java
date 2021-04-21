@@ -1,18 +1,22 @@
 package ulco.cardGame.server;
 
 import ulco.cardGame.common.games.CardGame;
+import ulco.cardGame.common.games.PokerGame;
 import ulco.cardGame.common.interfaces.Game;
 import ulco.cardGame.common.interfaces.Player;
 import ulco.cardGame.common.players.CardPlayer;
+import ulco.cardGame.common.players.PokerPlayer;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Constructor;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 
 /**
  * Server Game management with use of Singleton instance creation
@@ -39,15 +43,29 @@ public class SocketServer {
 
     public static void main(String[] args) {
         SocketServer server = new SocketServer();
+
         server.run();
     }
 
     private void run() {
 
         try {
+                game=null;
+            //game choice
+            System.out.println("Which game do you want to play ? (Battle/Poker)");
+            Scanner scanner = new Scanner(System.in);
+            String gameName = scanner.nextLine();
+            if (gameName.equals("Battle")) {
+                // Need to specify your current cardGame.txt file
+                game = new CardGame("Battle", 3, "resources/games/cardGame.txt");
+            } else if (gameName.equals("Poker")) {
+                game = new PokerGame("Texas Poker", 3, 3, "resources/games/pokerGame.txt");
 
-            // Need to specify your current cardGame.txt file
-            game = new CardGame("Battle", 3, "resources/games/cardGame.txt");
+            }if (game==null){
+                System.out.println("Unknown Game...");
+                return;
+            }
+
 
             // Game Loop
             System.out.println("Waiting for new player for " + game.toString());
@@ -63,46 +81,60 @@ public class SocketServer {
                 String playerUsername = (String) ois.readObject();
 
                 //write socket
-                ObjectOutputStream sendData = new ObjectOutputStream(socket.getOutputStream());
+               //ObjectOutputStream sendData = new ObjectOutputStream(socket.getOutputStream());
 
                 // Create player instance
-                Player player = new CardPlayer(playerUsername);
+                Player player=null;
+                if(gameName.equals("Battle")) {
+                    player = new CardPlayer(playerUsername);
+                }else if (gameName.equals("Poker")){
+                    player= new PokerPlayer(playerUsername);
+                }
 
-                // TODO : Add player in game
-                //player is adding
+                //  Add player in game
+
                if (game.getPlayers().size()<game.maxNumberOfPlayers()){
 
-                   game.addPlayer(player,socket);
-                   ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
-                   oos.writeObject(game);
+                   if (game.addPlayer(player,socket)) {
+                       ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+                       oos.writeObject(game);
 
-                   // Tell to other players that new player is connected
-                   for (Socket playerSocket : playerSockets.values()) {
+                       // Tell to other players that new player is connected
+                       for (Socket playerSocket : playerSockets.values()) {
 
-                       ObjectOutputStream playerOos = new ObjectOutputStream(playerSocket.getOutputStream());
-                       playerOos.writeObject("Now connected: " + player.getName());
+                           ObjectOutputStream playerOos = new ObjectOutputStream(playerSocket.getOutputStream());
+
+                           playerOos.writeObject("Now connected: " + player.getName());
+
+
+                           ObjectOutputStream update = new ObjectOutputStream(playerSocket.getOutputStream());
+                           update.writeObject(game);
+                       }
+
+                       // Store player's socket in dictionary (Map)
+                       playerSockets.put(player, socket);
+
+                       System.out.println(player.getName() + " is now connected...");
                    }
-
-                   // Store player's socket in dictionary (Map)
-                   playerSockets.put(player, socket);
-
-                   System.out.println(player.getName() + " is now connected...");
-
                }else {
-                 //  System.out.println("max number player error connection !");
-                   sendData.writeObject("maxNumber");
+                   System.out.println("An error has occurred !");
                }
-
 
             } while (!game.isStarted());
 
             // run the whole game using sockets
-            // TODO : Player gameWinner = game.run(playerSockets);
+            Player gameWinner = game.run(playerSockets);
+
 
             // Tells to player that server will be closed (just as example)
             for (Socket playerSocket : playerSockets.values()) {
+
+                ObjectOutputStream winOos = new ObjectOutputStream(playerSocket.getOutputStream());
+                winOos.writeObject("Winner of the game is " + gameWinner.getName() + " !!");
+
                 ObjectOutputStream playerOos = new ObjectOutputStream(playerSocket.getOutputStream());
                 playerOos.writeObject("END");
+
             }
 
             // Close each socket when game is finished

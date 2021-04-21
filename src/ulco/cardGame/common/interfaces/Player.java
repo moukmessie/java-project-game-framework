@@ -2,7 +2,9 @@ package ulco.cardGame.common.interfaces;
 
 import ulco.cardGame.common.games.components.Component;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.net.Socket;
 import java.util.List;
 
 public interface Player extends Serializable {
@@ -22,7 +24,7 @@ public interface Player extends Serializable {
     /**
      * Player do an action into a Game
      */
-    Component play();
+    void play(Socket socket) throws IOException;
 
     /**
      * Depending of game rules, specify if the player can play currently

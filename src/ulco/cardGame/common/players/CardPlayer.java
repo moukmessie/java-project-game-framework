@@ -3,6 +3,10 @@ package ulco.cardGame.common.players;
 import ulco.cardGame.common.games.components.Card;
 import ulco.cardGame.common.games.components.Component;
 
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -26,14 +30,18 @@ public class CardPlayer extends BoardPlayer {
     }
 
     @Override
-    public Card play()  {
+    public void play(Socket socket) throws IOException {
 
         Card cardToPlay = (Card)cards.get(0);
 
-        // Remove card from  player hand
-        this.removeComponent(cardToPlay);
 
-        return cardToPlay;
+        ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+        oos.writeObject(cardToPlay);
+
+        // Remove card from  player hand
+       // this.removeComponent(cardToPlay);
+
+        //return cardToPlay;
     }
 
     @Override
