@@ -72,7 +72,9 @@ public class Client {
                     if (((String) answer).contains("you have to play")){
                         game.getCurrentPlayer(username).play(socket);
                     }
-
+                   /* if (((String) answer).contains("please select a valid Coin to play (coin color)")){
+                        game.getCurrentPlayer(username).play(socket);
+                    }*/
                 }
 
             }while (!answer.equals("END"));
