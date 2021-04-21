@@ -133,8 +133,8 @@ public class CardGame extends BoardGame {
 
                 }while (!(answer instanceof Card));
 
-                ObjectOutputStream receveOut = new ObjectOutputStream(playerSocketMap.get(player).getOutputStream());
-                receveOut.writeObject(cardSend.getName()+ " played by " + player.getName());
+                    //ObjectOutputStream receveOut = new ObjectOutputStream(playerSocketMap.get(player).getOutputStream());
+                  //  receveOut.writeObject(cardSend.getName() + " played by " + player.getName());
 
                 //removing played cards from game
                 for (Component c: player.getSpecificComponents(Card.class)){
@@ -150,6 +150,12 @@ public class CardGame extends BoardGame {
                 playedCard.put(player, cardSend);
 
                 System.out.println(player.getName() + " has played " + cardSend.getName());
+
+                for(Map.Entry<Player,Socket>entry : playerSocketMap.entrySet()){
+                ObjectOutputStream hasPlayed = new ObjectOutputStream(entry.getValue().getOutputStream());
+                hasPlayed.writeObject("Player " + player.getName() + " has played " + cardSend.getName());
+                }
+
             }
 
             // display board state
@@ -220,9 +226,11 @@ public class CardGame extends BoardGame {
                 // player cannot still play if no card in hand
                 if (player.getScore() == 0){
                     player.canPlay(false);
-
-                    ObjectOutputStream losingPlayer = new ObjectOutputStream(playerSocketMap.get(player).getOutputStream());
-                    losingPlayer.writeObject(player.getName() + "  has lost !!!");
+                    for(Map.Entry<Player,Socket>entry : playerSocketMap.entrySet()) {
+                        ObjectOutputStream losingPlayer = new ObjectOutputStream(entry.getValue().getOutputStream());
+                        losingPlayer.writeObject(player.getName() + "  has lost !!!");
+                    }
+                    removePlayer(player);
 
                 }
 
@@ -230,8 +238,10 @@ public class CardGame extends BoardGame {
                 if (player.getScore() == cards.size()) {
                     player.canPlay(false);
                     gameWinner = player;
-                    ObjectOutputStream winningPlayer = new ObjectOutputStream(playerSocketMap.get(player).getOutputStream());
-                    winningPlayer.writeObject(gameWinner.getName() + "  WON !!!");
+                    for(Map.Entry<Player,Socket>entry : playerSocketMap.entrySet()){
+                        ObjectOutputStream winningPlayer = new ObjectOutputStream(entry.getValue().getOutputStream());
+                        winningPlayer.writeObject(gameWinner.getName() + "  WON !!!");
+                    }
                 }
             }
 
@@ -275,4 +285,5 @@ public class CardGame extends BoardGame {
                 "name='" + name + '\'' +
                 '}';
     }
+
 }

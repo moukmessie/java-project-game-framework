@@ -135,28 +135,32 @@ public class PokerGame extends BoardGame {
             // Depending of player hand, they can choose a Coin to play
             for (Player player : players) {
                //board.addComponent(player.play());
+                //action players sending (wait or play)
                 for (Map.Entry<Player,Socket>entry : playerSocketMap.entrySet()) {
                     String msg="";
-                    ObjectOutputStream outputStream = new ObjectOutputStream(entry.getValue().getOutputStream());
-                    if (entry.getKey()!= player) {
+                    ObjectOutputStream actionPlayers = new ObjectOutputStream(entry.getValue().getOutputStream());
+                    if (entry.getKey()== player) {
                        msg += " ["+player.getName() + "] you have to play...";
                     }else {
                         msg += "Waiting for "+player.getName() + " to play...";
-                    } outputStream.writeObject(msg);
+                    }
+                    actionPlayers.writeObject(msg);
 
                 }
                 player.play(playerSocketMap.get(player));
 
                 //Answer
-                Coin coinSend = null;
-                ObjectInputStream inputStream = new ObjectInputStream(playerSocketMap.get(player).getInputStream());
 
-               do{
+
+               ObjectInputStream inputStream = new ObjectInputStream(playerSocketMap.get(player).getInputStream());
+                Coin coinSend = (Coin)inputStream.readObject();
+
+              /* do{
                    answer = inputStream.readObject();
                    if (answer instanceof Component){
                          coinSend= (Coin)answer;
                     }
-                } while (!(answer instanceof Component));
+                } while (!(answer instanceof Component));*/
                 //send player message
                 ObjectOutputStream outputStream1 = new ObjectOutputStream(playerSocketMap.get(player).getOutputStream());
                 outputStream1.writeObject("You played " + coinSend.getName());
@@ -167,6 +171,10 @@ public class PokerGame extends BoardGame {
                         player.removeComponent(c);
                     }
                 } board.addComponent(coinSend);
+                for (Map.Entry<Player,Socket>entry : playerSocketMap.entrySet()) {
+                    ObjectOutputStream coinBet = new ObjectOutputStream(entry.getValue().getOutputStream());
+                    coinBet.writeObject("Player "+ player.getName() + " has bet "+ coinSend.getName());
+                }
             }
 
             // Board will manage the Poker game state
@@ -176,10 +184,17 @@ public class PokerGame extends BoardGame {
                 cardIndex++;
             }
 
-           // board.displayState(); view board
+            board.displayState();
+            //view board
             for(Map.Entry<Player,Socket>entry : playerSocketMap.entrySet()){
                 ObjectOutputStream viewBoard2 = new ObjectOutputStream(entry.getValue().getOutputStream());
                 viewBoard2 .writeObject(board);
+            }
+            //Game state update
+            for (Player player : players) {
+                //board.addComponent(player.play());
+                ObjectOutputStream gameState = new ObjectOutputStream(playerSocketMap.get(player).getOutputStream());
+                gameState.writeObject(this);
             }
 
 
@@ -189,7 +204,7 @@ public class PokerGame extends BoardGame {
                 for (Map.Entry<Player,Socket>entry : playerSocketMap.entrySet()) {
                     String msg="";
                     ObjectOutputStream outputStream1 = new ObjectOutputStream(entry.getValue().getOutputStream());
-                    if (entry.getKey()!= player) {
+                    if (entry.getKey()== player) {
                         msg += " ["+player.getName() + "] you have to play...";
                     }else {
                         msg += "Waiting for "+player.getName() + " to play...";
@@ -198,27 +213,29 @@ public class PokerGame extends BoardGame {
                 }
                 player.play(playerSocketMap.get(player));
 
-                //Answer
-                Component coin = null;
-                Object answer1;
-                ObjectInputStream inputStream1 = new ObjectInputStream(playerSocketMap.get(player).getInputStream());
+                ObjectInputStream inputStream = new ObjectInputStream(playerSocketMap.get(player).getInputStream());
+                Coin coinSend = (Coin)inputStream.readObject();
 
-               do {
-                    answer1 = inputStream1.readObject();
-                    if (answer1 instanceof Component){
-                        coin= (Component)answer1;
+              /* do{
+                   answer = inputStream.readObject();
+                   if (answer instanceof Component){
+                         coinSend= (Coin)answer;
                     }
-                }while (!(answer1 instanceof Component));
+                } while (!(answer instanceof Component));*/
                 //send player message
-                ObjectOutputStream outputStream2 = new ObjectOutputStream(playerSocketMap.get(player).getOutputStream());
-                outputStream2.writeObject("You played " + coin.getName());
+                ObjectOutputStream outputStream1 = new ObjectOutputStream(playerSocketMap.get(player).getOutputStream());
+                outputStream1.writeObject("You played " + coinSend.getName());
 
                 //remove Component playing
                 for(Component c : player.getSpecificComponents(Coin.class)) {
-                    if (c.getId().equals(coin.getId())) {
+                    if (c.getId().equals(coinSend.getId())) {
                         player.removeComponent(c);
                     }
-                } board.addComponent(coin);
+                } board.addComponent(coinSend);
+                for (Map.Entry<Player,Socket>entry : playerSocketMap.entrySet()) {
+                    ObjectOutputStream coinBet = new ObjectOutputStream(entry.getValue().getOutputStream());
+                    coinBet.writeObject("Player "+ player.getName() + " has bet "+ coinSend.getName());
+                }
             }
 
             // now we can get the winner
@@ -404,6 +421,11 @@ public class PokerGame extends BoardGame {
             if (coinSum > bestCoinSum) {
                 bestCoinSum = coinSum;
                 gameWinner = player;
+                for(Map.Entry<Player,Socket>entry : playerSocketMap.entrySet()){
+
+                    ObjectOutputStream winningPlayer = new ObjectOutputStream(entry.getValue().getOutputStream());
+                    winningPlayer.writeObject("The Winner of the game is " + gameWinner.getName()+ " with score "+ gameWinner.getScore() );
+                }
             }
         }
         return gameWinner;
@@ -412,5 +434,10 @@ public class PokerGame extends BoardGame {
     @Override
     public boolean end() {
         return numberOfRounds >= maxRounds;
+    }
+
+    @Override
+    public String toString() {
+        return "****** " + name + " ******" ;
     }
 }
