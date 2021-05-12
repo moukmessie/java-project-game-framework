@@ -1,4 +1,4 @@
-# L2 - Java Project
+#  Java Project
 
 ## Author
 MOUKIMOU M'PIKA Messie G
@@ -11,9 +11,6 @@ Jeux visés à intégrer :
 - Bataille classique
 - Jeu de Poker
 - ...
-
-
-## Planning
 
 
 ## Objectifs
