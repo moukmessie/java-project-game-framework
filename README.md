@@ -1,7 +1,6 @@
 #  Java Project
 
-## Author
-MOUKIMOU M'PIKA Messie G
+
 
 ## Description 
 
